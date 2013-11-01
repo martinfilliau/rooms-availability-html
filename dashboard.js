@@ -1,5 +1,9 @@
 $(function() {
-    var query = "https://data.ox.ac.uk/sparql/?query=SELECT+%3Faccount+%3FresourceLabel+WHERE+%7B%0D%0A++%3Faccount+foaf%3AaccountServiceHomepage+%3Chttps%3A%2F%2Fnexus.ox.ac.uk%2F%3E+.%0D%0A++%3Fresource+foaf%3Aaccount+%3Faccount+.%0D%0A++%3Fresource+dc%3Atitle+%3FresourceLabel+.%0D%0A++%3Fresource+spatialrelations%3Awithin+%3Chttp%3A%2F%2Foxpoints.oucs.ox.ac.uk%2Fid%2F23233672%3E%0D%0A%7D&format=srj&common_prefixes=on";
+$.each($("div[data-oxpoints]"), function(_, widgetEl) {
+    widgetEl = $(widgetEl);
+    var oxpoints = widgetEl.data('oxpoints');
+    
+    var query = "https://data.ox.ac.uk/sparql/?query=SELECT+%3Faccount+%3FresourceLabel+WHERE+%7B%0D%0A++%3Faccount+foaf%3AaccountServiceHomepage+%3Chttps%3A%2F%2Fnexus.ox.ac.uk%2F%3E+.%0D%0A++%3Fresource+foaf%3Aaccount+%3Faccount+.%0D%0A++%3Fresource+dc%3Atitle+%3FresourceLabel+.%0D%0A++%3Fresource+spatialrelations%3Awithin+%3Chttp%3A%2F%2Foxpoints.oucs.ox.ac.uk%2Fid%2F"+oxpoints+"%3E%0D%0A%7D&format=srj&common_prefixes=on";
     
     var availableRooms = [];
     var timeSeries = [];
@@ -79,7 +83,8 @@ $(function() {
             var formatted_end = end.format(format);
             element.html("<h2>"+name+"</h2><p>Busy from "+formatted_start+" to "+formatted_end+"</p>");
           })
-        
-        var svg = d3.select("#rooms").append("svg").datum(timeSeries).call(chart);
+          
+        var svg = d3.select(widgetEl[0]).append("svg").datum(timeSeries).call(chart);
     });
+});
 });
