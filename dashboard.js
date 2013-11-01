@@ -3,7 +3,6 @@ $(function() {
     
     var availableRooms = [];
     var timeSeries = [];
-    var div = $("#rooms");
     
     function processRoom(room) {
         var endpoint = "http://127.0.0.1:8080/availability?email=";
@@ -13,7 +12,6 @@ $(function() {
             context: this,
             success: function(data) {
                 var periods = data.busyPeriods.periods;
-                var now = moment();
                 var times = [];
                 for (var i in periods) {
                     var period = periods[i];
@@ -30,8 +28,7 @@ $(function() {
                     label = label.split(avoid)[0].trim();
                 }
                 
-                var data = {times: times, label: label};
-                timeSeries.push(data);
+                timeSeries.push({times: times, label: label});
             }
         });
     }
