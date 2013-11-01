@@ -68,6 +68,8 @@ $(function() {
         var night = moment().hour(19).minute(0).valueOf();
         
         var chart = d3.timeline().width(1000).stack();
+        var colorScale = d3.scale.ordinal().range(['#00000']);
+        chart.colors(colorScale);
         chart.beginning(morning);
         chart.ending(night);
         chart.showToday();
