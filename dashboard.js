@@ -1,49 +1,74 @@
 $(function() {
     var query = "https://data.ox.ac.uk/sparql/?query=SELECT+%3Faccount+%3FresourceLabel+WHERE+%7B%0D%0A++%3Faccount+foaf%3AaccountServiceHomepage+%3Chttps%3A%2F%2Fnexus.ox.ac.uk%2F%3E+.%0D%0A++%3Fresource+foaf%3Aaccount+%3Faccount+.%0D%0A++%3Fresource+dc%3Atitle+%3FresourceLabel+.%0D%0A++%3Fresource+spatialrelations%3Awithin+%3Chttp%3A%2F%2Foxpoints.oucs.ox.ac.uk%2Fid%2F23233672%3E%0D%0A%7D&format=srj&common_prefixes=on";
     
+    var rooms = [];
+    
+    var width = 500,
+        height = 500,
+        div = d3.select('#matrix'),
+        svg = div.append('svg')
+            .attr('width', width)
+            .attr('height', height),
+        rw = 50,
+        rh = 50;
+    
+        var data = [];
+        for (var k = 0; k < 10; k += 1) {
+            data.push(d3.range(3));
+        }
+        
+        var grp = svg.selectAll('g')
+            .data(data)
+            .enter()
+            .append('g')
+            .attr('transform', function(d, i) {
+                return 'translate(0, ' + (rh + 5) * i + ')';
+            });
+            
+            grp.selectAll('rect')
+                .data(function(d) { return d; })
+                .enter()
+                .append('rect')
+                    .attr('x', function(d, i) { return (rw + 5) * i; })
+                    .attr('width', rw)
+                    .attr('height', rh);
+    
     function processRooms() {
-    $.each($("div[data-room-email]"), function(_, widgetEl) {
-        widgetEl = $(widgetEl);
-        var email = widgetEl.data('room-email');
         var endpoint = "http://127.0.0.1:8080/availability?email=";
-        $.ajax(endpoint+email, {
-            dataType: "json",
-            success: function(data) {
-                var periods = data.busyPeriods.periods;
-                var html = "";
-                var now = moment();
-                if (periods.length > 0) {
-                    html += "<ul>";
+        
+        for (var index in rooms) {
+            var room = rooms[index];
+            $.ajax(endpoint+room.email, {
+                dataType: "json",
+                success: function(data) {
+                    var periods = data.busyPeriods.periods;
+                    var now = moment();
                     var busy = false;
-                    for (var index in periods) {
-                        var period = periods[index];
+                    var ps = [];
+                    for (var i in periods) {
+                        var period = periods[i];
                         // 2013-11-01T10:00:00GMT
                         var format = "YYYY-MM-DD'T'HH:mm:ssZ";
                         var fromMoment = moment(period.from, format);
                         var toMoment = moment(period.to, format);
+                        var now = false;
                         if (fromMoment.isAfter(now) && toMoment.isBefore(now)) {
-                            html += "<li><strong>From: " + fromMoment.format("HH:mm") + " to " + toMoment.format("HH:mm") + "</strong></li>";
                             busy = true;
-                        } else {
-                            html += "<li>From: " + fromMoment.format("HH:mm") + " to " + toMoment.format("HH:mm") + "</li>";
+                            now = true;
                         }
+                        ps.push({from: fromMoment, to: toMoment, now: now});
                     }
-                    html += "</ul>";
-                    if (busy) {
-                        html += '<div style="width: 40px; height: 40px; background-color: red;"></div>';
-                    } else {
-                        html += '<div style="width: 40px; height: 40px; background-color: green;"></div>';
-                    }
-                } else {
-                    html = '<strong>No meetings!</strong><div style="width: 40px; height: 40px; background-color: green;"></div>';
+                    room.busy = busy;
+                    room.periods = ps;
                 }
-                widgetEl.html(html);
-            }
-        });
-    });
+            });
+        }
+        
+        console.log(rooms);
     }
     
     $.ajax(query, {
+        context: this,
         success: function(data) {
             var resources = data.results.bindings;
             var div = $("#rooms");
@@ -52,9 +77,10 @@ $(function() {
                 var mailto = resource.account.value;
                 var email = mailto.split(":")[1];
                 var title = resource.resourceLabel.value;
-                rooms += title + ", ";
-                var room = $("<h2>"+title+"</h2><div data-room-email='" + email + "'></div>")
-                div.append(room);
+                rooms.push({name: title, email: email});
+                //rooms += title + ", ";
+                //var room = $("<h2>"+title+"</h2><div data-room-email='" + email + "'></div>")
+                //div.append(room);
             }
             processRooms();
         }
