@@ -14,8 +14,6 @@ $(function() {
             success: function(data) {
                 var periods = data.busyPeriods.periods;
                 var now = moment();
-                var busy = false;
-                var ps = [];
                 var times = [];
                 for (var i in periods) {
                     var period = periods[i];
@@ -23,12 +21,6 @@ $(function() {
                     var format = "YYYY-MM-DD'T'HH:mm:ssZ";
                     var fromMoment = moment(period.from, format);
                     var toMoment = moment(period.to, format);
-                    var now = false;
-                    if (fromMoment.isAfter(now) && toMoment.isBefore(now)) {
-                        busy = true;
-                        now = true;
-                    }
-                    ps.push({from: fromMoment, to: toMoment, now: now});
                     times.push({starting_time: fromMoment.valueOf(), ending_time: toMoment.valueOf()})
                 }
                 
