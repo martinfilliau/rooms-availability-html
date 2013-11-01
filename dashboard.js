@@ -3,6 +3,7 @@ $(function() {
     
     var availableRooms = [];
     var rooms = [];
+    var timeSeries = [];
     var div = $("#rooms");
     
     function processRoom(room) {
@@ -38,24 +39,8 @@ $(function() {
                 r.periods = ps;
                 rooms.push(r);
                 
-                var morning = moment().hour(8).minute(0).valueOf();
-                var night = moment().hour(19).minute(0).valueOf();
-                
-                var id = r.email.split("@")[0];
-                
-                div.append('<h3>'+r.name+'</h3><div id="'+id+'"></div>')
-                
-                var data = {times: times};
-                
-                var chart = d3.timeline();
-                chart.beginning(morning);
-                chart.ending(night);
-                chart.showToday();
-                chart.showTodayFormat({marginTop: 25, marginBottom: 0, width: 2, color: "rgb(255, 0, 0)"});
-                
-                var svg = d3.select("#"+id).append("svg").attr("width", 1000)
-                          .datum([data]).call(chart);
-                          
+                var data = {times: times, label: r.name.split("Meeting Room")[0].trim(),};
+                timeSeries.push(data);
             }
         });
     }
@@ -82,4 +67,18 @@ $(function() {
         }
     });
     
+    $(document).ajaxStop(function() {
+        $(this).unbind("ajaxStop"); //prevent running again when other calls finish
+        
+        var morning = moment().hour(8).minute(0).valueOf();
+        var night = moment().hour(19).minute(0).valueOf();
+        
+        var chart = d3.timeline().width(2000).stack()
+        chart.beginning(morning);
+        chart.ending(night);
+        chart.showToday();
+        chart.showTodayFormat({marginTop: 25, marginBottom: 0, width: 2, color: "rgb(255, 0, 0)"});
+        
+        var svg = d3.select("#rooms").append("svg").datum(timeSeries).call(chart);
+    });
 });
