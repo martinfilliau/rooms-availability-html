@@ -4,36 +4,6 @@ $(function() {
     var availableRooms = [];
     var rooms = [];
     
-    var width = 500,
-        height = 500,
-        div = d3.select('#matrix'),
-        svg = div.append('svg')
-            .attr('width', width)
-            .attr('height', height),
-        rw = 50,
-        rh = 50;
-    
-        var data = [];
-        for (var k = 0; k < 10; k += 1) {
-            data.push(d3.range(3));
-        }
-        
-        var grp = svg.selectAll('g')
-            .data(data)
-            .enter()
-            .append('g')
-            .attr('transform', function(d, i) {
-                return 'translate(0, ' + (rh + 5) * i + ')';
-            });
-            
-            grp.selectAll('rect')
-                .data(function(d) { return d; })
-                .enter()
-                .append('rect')
-                    .attr('x', function(d, i) { return (rw + 5) * i; })
-                    .attr('width', rw)
-                    .attr('height', rh);
-    
     function processRoom(room) {
         var endpoint = "http://127.0.0.1:8080/availability?email=";
         
@@ -63,20 +33,16 @@ $(function() {
                 r.email = room.email;
                 r.busy = busy;
                 r.periods = ps;
-                console.log(r);
                 rooms.push(r);
             }
         });
     }
     
     function processRooms() {
-        console.log(availableRooms);
         for (var index in availableRooms) {
             var room = availableRooms[index];
             processRoom(room);
         }
-        
-        console.log(rooms);
     }
     
     $.ajax(query, {
@@ -90,9 +56,6 @@ $(function() {
                 var email = mailto.split(":")[1];
                 var title = resource.resourceLabel.value;
                 availableRooms.push({name: title, email: email});
-                //rooms += title + ", ";
-                //var room = $("<h2>"+title+"</h2><div data-room-email='" + email + "'></div>")
-                //div.append(room);
             }
             processRooms();
         }
