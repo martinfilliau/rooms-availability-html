@@ -1,0 +1,14 @@
+https://data.ox.ac.uk/sparql/?query=SELECT+%3Faccount+%3FresourceLabel+WHERE+%7B%0D%0A++%3Faccount+foaf%3AaccountServiceHomepage+%3Chttps%3A%2F%2Fnexus.ox.ac.uk%2F%3E+.%0D%0A++%3Fresource+foaf%3Aaccount+%3Faccount+.%0D%0A++%3Fresource+dc%3Atitle+%3FresourceLabel+.%0D%0A++%3Fresource+spatialrelations%3Awithin+%3Chttp%3A%2F%2Foxpoints.oucs.ox.ac.uk%2Fid%2F23233672%3E%0D%0A%7D&format=srj&common_prefixes=on
+
+
+
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX spatialrelations: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/>
+
+SELECT ?account ?resourceLabel WHERE {
+  ?account foaf:accountServiceHomepage <https://nexus.ox.ac.uk/> .
+  ?resource foaf:account ?account .
+  ?resource dc:title ?resourceLabel .
+  ?resource spatialrelations:within <http://oxpoints.oucs.ox.ac.uk/id/23233672>
+}
