@@ -32,14 +32,8 @@ $(function() {
                     ps.push({from: fromMoment, to: toMoment, now: now});
                     times.push({starting_time: fromMoment.valueOf(), ending_time: toMoment.valueOf()})
                 }
-                var r = {};
-                r.name = room.name;
-                r.email = room.email;
-                r.busy = busy;
-                r.periods = ps;
-                rooms.push(r);
                 
-                var data = {times: times, label: r.name.split("Meeting Room")[0].trim(),};
+                var data = {times: times, label: room.name.split("Meeting Room")[0].trim(),};
                 timeSeries.push(data);
             }
         });
@@ -73,11 +67,11 @@ $(function() {
         var morning = moment().hour(8).minute(0).valueOf();
         var night = moment().hour(19).minute(0).valueOf();
         
-        var chart = d3.timeline().width(2000).stack()
+        var chart = d3.timeline().width(1000).stack();
         chart.beginning(morning);
         chart.ending(night);
         chart.showToday();
-        chart.showTodayFormat({marginTop: 25, marginBottom: 0, width: 2, color: "rgb(255, 0, 0)"});
+        chart.showTodayFormat({marginTop: 25, marginBottom: 0, width: 3, color: "rgb(255, 0, 0)"});
         
         var svg = d3.select("#rooms").append("svg").datum(timeSeries).call(chart);
     });
