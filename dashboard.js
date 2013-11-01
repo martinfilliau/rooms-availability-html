@@ -51,6 +51,7 @@ $(function() {
                 chart.beginning(morning);
                 chart.ending(night);
                 chart.showToday();
+                chart.showTodayFormat({marginTop: 25, marginBottom: 0, width: 2, color: "rgb(255, 0, 0)"});
                 
                 var svg = d3.select("#"+id).append("svg").attr("width", 1000)
                           .datum([data]).call(chart);
@@ -80,7 +81,5 @@ $(function() {
             processRooms();
         }
     });
-    
-    
     
 });
