@@ -32,7 +32,13 @@ $(function() {
                     times.push({starting_time: fromMoment.valueOf(), ending_time: toMoment.valueOf()})
                 }
                 
-                var data = {times: times, label: room.name.split("Meeting Room")[0].trim(),};
+                var label = room.name;
+                var avoid = "Meeting Room";     // if present, remove this string
+                if (label.indexOf(avoid) !== -1) {
+                    label = label.split(avoid)[0].trim();
+                }
+                
+                var data = {times: times, label: label};
                 timeSeries.push(data);
             }
         });
