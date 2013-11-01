@@ -3,6 +3,7 @@ $(function() {
     
     var availableRooms = [];
     var rooms = [];
+    var div = $("#rooms");
     
     function processRoom(room) {
         var endpoint = "http://127.0.0.1:8080/availability?email=";
@@ -15,6 +16,7 @@ $(function() {
                 var now = moment();
                 var busy = false;
                 var ps = [];
+                var times = [];
                 for (var i in periods) {
                     var period = periods[i];
                     // 2013-11-01T10:00:00GMT
@@ -27,6 +29,7 @@ $(function() {
                         now = true;
                     }
                     ps.push({from: fromMoment, to: toMoment, now: now});
+                    times.push({starting_time: fromMoment.valueOf(), ending_time: toMoment.valueOf()})
                 }
                 var r = {};
                 r.name = room.name;
@@ -34,6 +37,24 @@ $(function() {
                 r.busy = busy;
                 r.periods = ps;
                 rooms.push(r);
+                
+                var morning = moment().hour(8).minute(0).valueOf();
+                var night = moment().hour(19).minute(0).valueOf();
+                
+                var id = r.email.split("@")[0];
+                
+                div.append('<h3>'+r.name+'</h3><div id="'+id+'"></div>')
+                
+                var data = {times: times};
+                
+                var chart = d3.timeline();
+                chart.beginning(morning);
+                chart.ending(night);
+                chart.showToday();
+                
+                var svg = d3.select("#"+id).append("svg").attr("width", 1000)
+                          .datum([data]).call(chart);
+                          
             }
         });
     }
@@ -49,7 +70,6 @@ $(function() {
         context: this,
         success: function(data) {
             var resources = data.results.bindings;
-            var div = $("#rooms");
             for (var index in resources) {
                 var resource = resources[index];
                 var mailto = resource.account.value;
