@@ -70,6 +70,7 @@ $(function() {
         var chart = d3.timeline().width(1000).stack();
         var colorScale = d3.scale.ordinal().range(['#00000']);
         chart.colors(colorScale);
+        chart.tickFormat({format: d3.time.format("%H"), tickTime: d3.time.hours, tickNumber: 1, tickSize: 2});
         chart.beginning(morning);
         chart.ending(night);
         chart.showToday();
