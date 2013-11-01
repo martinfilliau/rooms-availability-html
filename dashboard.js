@@ -75,6 +75,16 @@ $(function() {
         chart.ending(night);
         chart.showToday();
         chart.showTodayFormat({marginTop: 25, marginBottom: 0, width: 3, color: "rgb(255, 0, 0)"});
+        chart.hover(function (d, i, datum) {
+            var element = $("#details");
+            var name = datum.label;
+            var start = moment(d.starting_time);
+            var end = moment(d.ending_time);
+            var format = "H:mm";
+            var formatted_start = start.format(format);
+            var formatted_end = end.format(format);
+            element.html("<h2>"+name+"</h2><p>Busy from "+formatted_start+" to "+formatted_end+"</p>");
+          })
         
         var svg = d3.select("#rooms").append("svg").datum(timeSeries).call(chart);
     });
